@@ -1,31 +1,22 @@
 <?php
 
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FrontEndController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-require __DIR__.'/auth.php';
+//fronend action routes
+Route::get('/', [FrontEndController::class, 'home']);
+
+
+// auth action routes dashboardcontroller
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', [DashboardController::class, 'home'])->middleware(['auth', 'verified'])->name('dashboard');
+
+// chatcontroller action routes
+Route::middleware(['auth:sanctum', 'verified'])->get( '/chat/rooms', [ChatController::class, 'rooms']);
+Route::middleware(['auth:sanctum', 'verified'])->get( '/chat/room/{roomId}/messages', [ChatController::class, 'messages']);
+Route::middleware(['auth:sanctum', 'verified'])->post( '/chat/room/{roomId}/message', [ChatController::class, 'newMessage']);
